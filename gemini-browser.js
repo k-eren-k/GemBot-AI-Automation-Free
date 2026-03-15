@@ -1,5 +1,6 @@
 const { chromium } = require('playwright');
 const path = require('path');
+const fs   = require('fs');
 const logger = require('./src/logger');
 const { CHROME_PROFILE_DIR, SELECTORS_FILE } = require('./src/config');
 
@@ -10,12 +11,13 @@ let isReady = false;
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 const DEFAULT_SELECTORS = {
-  input:       'div[contenteditable="true"]',
-  response:    'model-response, message-content, .message-content, .markdown',
-  sendButton:  'button[aria-label*="Gönder"], button[aria-label*="Send"]',
-  modelSelector: '[data-test-id="model-selector"]',
-  modelOption:   '[data-test-id="model-option"]',
-  chatList:    'a[data-test-id="conversation"]',
+  input:         'div[contenteditable="true"].ql-editor, rich-textarea .ql-editor, div[contenteditable="true"]',
+  response:      'model-response, message-content, .message-content, .markdown',
+  sendButton:    'button[aria-label*="gönder" i], button[aria-label*="send" i], button.send-button[aria-disabled="false"], button[jslog*="173899"]',
+  send:          'button[aria-label*="gönder" i], button[aria-label*="send" i], button.send-button[aria-disabled="false"]',
+  modelSelector: 'button[aria-label*="Mod" i], .input-area-switch, button[aria-label*="Model" i]',
+  modelOption:   'button.bard-mode-list-button, [role="menuitem"]',
+  chatList:      'a[data-test-id="conversation"]',
 };
 
 function loadSelectors() {
@@ -106,33 +108,65 @@ async function openBrowser() {
 }
 
 async function typeAndSend(p, text, sel) {
-  await p.waitForSelector(sel.input, { state: 'visible', timeout: 20_000 });
-  
+  // Input alanını bul — birden fazla seçici dene
+  const inputSels = (sel.input || DEFAULT_SELECTORS.input).split(',').map(s => s.trim());
+  let inputEl = null;
+  for (const s of inputSels) {
+    try {
+      await p.waitForSelector(s, { state: 'visible', timeout: 5_000 });
+      inputEl = s;
+      break;
+    } catch { /* sonraki seçiciyi dene */ }
+  }
+  if (!inputEl) throw new Error('Giriş alanı bulunamadı.');
+
   // Önceki metni temizle ve odaklan
-  await p.click(sel.input);
+  await p.click(inputEl);
   await p.evaluate(s => {
     const el = document.querySelector(s);
-    if (el) { 
-      el.focus(); 
-      el.innerText = ''; 
-      // Input eventini tetikle
-      el.dispatchEvent(new Event('input', { bubbles: true }));
+    if (!el) return;
+    el.focus();
+    // quill editor içeriğini temizle
+    if (el.classList.contains('ql-editor')) {
+      el.innerHTML = '<p><br></p>';
+    } else {
+      el.innerText = '';
     }
-  }, sel.input);
-  
-  await sleep(100);
-  await p.keyboard.insertText(text); // Tek seferde hızlıca yapıştır/ekle
-  await sleep(300);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  }, inputEl);
 
-  // Gönder botununa basmayı dene, yoksa Enter bas
-  const sent = await p.evaluate((s) => {
-    const btn = document.querySelector(s);
-    if (btn && !btn.disabled) {
-      btn.click();
-      return true;
-    }
-    return false;
-  }, sel.sendButton || sel.send);
+  await sleep(150);
+  await p.keyboard.insertText(text);
+  await sleep(400);
+
+  // Gönder butonunu birden fazla seçiciyle dene
+  const sendSelectors = [
+    sel.sendButton,
+    sel.send,
+    'button.send-button[aria-disabled="false"]',
+    'button[aria-label*="gönder" i]',
+    'button[aria-label*="send" i]',
+  ].filter(Boolean);
+
+  let sent = false;
+  for (const btnSel of sendSelectors) {
+    sent = await p.evaluate((s) => {
+      // class içeren birleşik seçicileri de dene
+      const selList = s.split(',').map(x => x.trim());
+      for (const sel of selList) {
+        try {
+          const btn = document.querySelector(sel);
+          if (btn && !btn.disabled && btn.getAttribute('aria-disabled') !== 'true') {
+            btn.click();
+            return true;
+          }
+        } catch {}
+      }
+      return false;
+    }, btnSel).catch(() => false);
+    if (sent) break;
+  }
 
   if (!sent) {
     await p.keyboard.press('Enter');
@@ -171,7 +205,10 @@ async function waitForResponse(p, sel, onProgress, initialCount = 0) {
 
   // 2. Mesaj içeriğinin gelişmesini ve durulmasını bekle
   for (let i = 0; i < 90; i++) {
-    const current = await p.evaluate(new Function('return ' + EXTRACT_MD)(), sel.response).catch(err => {
+    const current = await p.evaluate(
+      new Function('selector', `return (${EXTRACT_MD})(selector)`),
+      sel.response
+    ).catch(err => {
       logger.error('Extraction hatası:', err.message);
       return '';
     });
