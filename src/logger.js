@@ -375,6 +375,7 @@ function endTask(id, ok = true, note = '') {
 const logger = {
 
   // Yapılandırma
+  c,
   configure(opts) { Object.assign(_cfg, opts); return this; },
   getConfig()     { return { ..._cfg }; },
 
