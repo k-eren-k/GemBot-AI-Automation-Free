@@ -26,10 +26,10 @@
 > *Özgür yazılım, özgür ruh — tıpkı partizanlar gibi.*
 >
 > ```
-> Bir sabah uyandığımda
-> Çav Bella, Çav Bella, Çav Bella Çav Çav Çav
-> Bir sabah uyandığımda
-> İşgalcileri buldum yanı başımda
+> Ey yazılımcı kalk artık yerinden
+> Çav Fatura, Çav Fatura, Çav Fatura Çav Çav
+> Ey yazılımcı kalk artık yerinden
+> Gemini bedava akar damarından
 > ```
 
 <br/>
@@ -176,7 +176,7 @@ cp .env.example .env
 ### `.env` Dosyası
 
 ```env
-PORT=3000
+PORT=47371
 ```
 
 ---
@@ -192,9 +192,9 @@ Başarılı başlatma çıktısı:
 ```
 ══════════════════════════════════════════════════
   🚀 Gemini Bot API v2.0.0
-  🌐 Dashboard : http://127.0.0.1:3000
-  📖 API Docs  : http://127.0.0.1:3000/docs
-  ❤  Health   : http://127.0.0.1:3000/api/health
+  🌐 Dashboard : http://127.0.0.1:47371
+  📖 API Docs  : http://127.0.0.1:47371/docs
+  ❤  Health   : http://127.0.0.1:47371/api/health
 ══════════════════════════════════════════════════
 
 🔑 İlk API Key oluşturuldu: gmb_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -206,7 +206,7 @@ Başarılı başlatma çıktısı:
 ### Tarayıcıyı Başlat
 
 ```bash
-curl -X POST http://localhost:3000/api/browser/open \
+curl -X POST http://localhost:47371/api/browser/open \
   -H "Authorization: Bearer gmb_xxxxx"
 ```
 
@@ -257,7 +257,7 @@ gemini-bot-api/
 
 ```javascript
 module.exports = {
-  PORT:               3000,
+  PORT:               47371,
   CHROME_PROFILE_DIR: path.join(process.env.LOCALAPPDATA, 'Google/Chrome/User Data/GeminiUser'),
   KEY_PREFIX:         'gmb_',
   RATE_LIMIT: {
@@ -303,7 +303,7 @@ Gemini DOM yapısı değişirse `data/selectors.json` dosyasını güncelleyin:
 
 | 🔗 Base URL | 📦 Format | 🔐 Auth | ⚡ Streaming | 🚦 Rate Limit |
 |:-----------:|:---------:|:-------:|:-----------:|:-------------:|
-| `http://localhost:3000` | JSON | Bearer Token | SSE | 60 req/dk |
+| `http://localhost:47371` | JSON | Bearer Token | SSE | 60 req/dk |
 
 </div>
 
@@ -326,7 +326,7 @@ Gemini DOM yapısı değişirse `data/selectors.json` dosyasını güncelleyin:
 > Sunucu ve tarayıcı durumunu döndürür. **Authentication gerektirmez.**
 
 ```bash
-curl http://localhost:3000/api/health
+curl http://localhost:47371/api/health
 ```
 
 <details>
@@ -369,7 +369,7 @@ Content-Type: application/json
 | `activityIds` | `string[]` | ➖ | Bağlam için aktivite ID listesi |
 
 ```bash
-curl -X POST http://localhost:3000/api/chat \
+curl -X POST http://localhost:47371/api/chat \
   -H "Authorization: Bearer gmb_xxxxx" \
   -H "Content-Type: application/json" \
   -d '{"message": "React hooks nedir?", "mode": "chat"}'
@@ -407,7 +407,7 @@ data: {"error": "Hata mesajı"}         ← Hata
 
 ```javascript
 async function streamChat(message, onChunk, onDone) {
-  const res = await fetch('http://localhost:3000/api/chat/stream', {
+  const res = await fetch('http://localhost:47371/api/chat/stream', {
     method: 'POST',
     headers: {
       'Authorization': 'Bearer gmb_xxxxx',
@@ -456,7 +456,7 @@ await streamChat(
 > Tarayıcıda yeni sohbet başlatır, Gemini bağlamını sıfırlar.
 
 ```bash
-curl -X POST http://localhost:3000/api/chat/new \
+curl -X POST http://localhost:47371/api/chat/new \
   -H "Authorization: Bearer gmb_xxxxx"
 ```
 
@@ -471,7 +471,7 @@ curl -X POST http://localhost:3000/api/chat/new \
 > Gemini'deki mevcut sohbet listesini döndürür.
 
 ```bash
-curl http://localhost:3000/api/chat/history \
+curl http://localhost:47371/api/chat/history \
   -H "Authorization: Bearer gmb_xxxxx"
 ```
 
@@ -512,7 +512,7 @@ curl http://localhost:3000/api/chat/history \
 | `index` | `number` | ✅ | `/api/chat/history` yanıtındaki `id` değeri |
 
 ```bash
-curl -X POST http://localhost:3000/api/chat/switch \
+curl -X POST http://localhost:47371/api/chat/switch \
   -H "Authorization: Bearer gmb_xxxxx" \
   -H "Content-Type: application/json" \
   -d '{"index": 1}'
@@ -533,7 +533,7 @@ GET /api/chat/messages?href=/app/CHAT_ID
 | `href` | ✅ | `/api/chat/history` yanıtından alınan sohbet href'i |
 
 ```bash
-curl "http://localhost:3000/api/chat/messages?href=/app/8911453ce98062c6" \
+curl "http://localhost:47371/api/chat/messages?href=/app/8911453ce98062c6" \
   -H "Authorization: Bearer gmb_xxxxx"
 ```
 
@@ -564,7 +564,7 @@ curl "http://localhost:3000/api/chat/messages?href=/app/8911453ce98062c6" \
 | `thinking` | Adım adım mantıksal çıkarım |
 
 ```bash
-curl -X POST http://localhost:3000/api/chat/model \
+curl -X POST http://localhost:47371/api/chat/model \
   -H "Authorization: Bearer gmb_xxxxx" \
   -H "Content-Type: application/json" \
   -d '{"model": "pro"}'
@@ -577,7 +577,7 @@ curl -X POST http://localhost:3000/api/chat/model \
 #### `GET` /api/keys — Listelemek (Public)
 
 ```bash
-curl http://localhost:3000/api/keys
+curl http://localhost:47371/api/keys
 ```
 
 <details>
@@ -604,7 +604,7 @@ curl http://localhost:3000/api/keys
 #### `POST` /api/keys — Oluştur (Public)
 
 ```bash
-curl -X POST http://localhost:3000/api/keys \
+curl -X POST http://localhost:47371/api/keys \
   -H "Content-Type: application/json" \
   -d '{"label": "production"}'
 ```
@@ -625,7 +625,7 @@ curl -X POST http://localhost:3000/api/keys \
 #### `DELETE` /api/keys/:id — Sil (Public)
 
 ```bash
-curl -X DELETE http://localhost:3000/api/keys/550e8400-e29b-41d4-a716-446655440000
+curl -X DELETE http://localhost:47371/api/keys/550e8400-e29b-41d4-a716-446655440000
 ```
 
 ---
@@ -635,7 +635,7 @@ curl -X DELETE http://localhost:3000/api/keys/550e8400-e29b-41d4-a716-4466554400
 > Tüm API key'lerinin toplu kullanım istatistikleri.
 
 ```bash
-curl http://localhost:3000/api/stats \
+curl http://localhost:47371/api/stats \
   -H "Authorization: Bearer gmb_xxxxx"
 ```
 
@@ -678,7 +678,7 @@ curl http://localhost:3000/api/stats \
 #### `GET` /api/activities
 
 ```bash
-curl http://localhost:3000/api/activities \
+curl http://localhost:47371/api/activities \
   -H "Authorization: Bearer gmb_xxxxx"
 ```
 
@@ -690,7 +690,7 @@ curl http://localhost:3000/api/activities \
 | `category` | `string` | ➖ | `görev` · `not` · `fikir` · `hata` · `gelişme` |
 
 ```bash
-curl -X POST http://localhost:3000/api/activities \
+curl -X POST http://localhost:47371/api/activities \
   -H "Authorization: Bearer gmb_xxxxx" \
   -H "Content-Type: application/json" \
   -d '{"content": "Login sayfasında CSS hatası var", "category": "hata"}'
@@ -699,7 +699,7 @@ curl -X POST http://localhost:3000/api/activities \
 #### `DELETE` /api/activities/:id
 
 ```bash
-curl -X DELETE http://localhost:3000/api/activities/UUID \
+curl -X DELETE http://localhost:47371/api/activities/UUID \
   -H "Authorization: Bearer gmb_xxxxx"
 ```
 
@@ -710,14 +710,14 @@ curl -X DELETE http://localhost:3000/api/activities/UUID \
 #### `POST` /api/browser/open
 
 ```bash
-curl -X POST http://localhost:3000/api/browser/open \
+curl -X POST http://localhost:47371/api/browser/open \
   -H "Authorization: Bearer gmb_xxxxx"
 ```
 
 #### `POST` /api/browser/reset
 
 ```bash
-curl -X POST http://localhost:3000/api/browser/reset \
+curl -X POST http://localhost:47371/api/browser/reset \
   -H "Authorization: Bearer gmb_xxxxx"
 ```
 
@@ -741,7 +741,7 @@ curl -X POST http://localhost:3000/api/browser/reset \
 `message` boş bırakılıp `activityIds` + `mode: "analyze"` gönderilirse aktivite listesini otomatik analiz eder:
 
 ```bash
-curl -X POST http://localhost:3000/api/chat \
+curl -X POST http://localhost:47371/api/chat \
   -H "Authorization: Bearer gmb_xxxxx" \
   -H "Content-Type: application/json" \
   -d '{
@@ -859,7 +859,7 @@ RATE_LIMIT: {
   <div id="answer"></div>
 
   <script>
-    const API_BASE = 'http://localhost:3000';
+    const API_BASE = 'http://localhost:47371';
     const API_KEY  = 'gmb_ANAHTARINIZ';
 
     async function ask() {
@@ -891,7 +891,7 @@ RATE_LIMIT: {
 ### Node.js
 
 ```javascript
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'http://localhost:47371';
 const API_KEY  = 'gmb_ANAHTARINIZ';
 
 async function chat(message, mode = 'chat') {
@@ -923,7 +923,7 @@ const analiz  = await chat('Bu kodu analiz et: ...', 'analyze');
 ```python
 import httpx
 
-API_BASE = "http://localhost:3000"
+API_BASE = "http://localhost:47371"
 API_KEY  = "gmb_ANAHTARINIZ"
 
 def chat(message: str, mode: str = "chat") -> str:
@@ -956,7 +956,7 @@ print(chat("Bu haftanın planını yap", "plan"))
 // hooks/useGeminiStream.js
 import { useState, useCallback } from 'react';
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'http://localhost:47371';
 const API_KEY  = 'gmb_ANAHTARINIZ';
 
 export function useGeminiStream() {
@@ -1045,14 +1045,14 @@ npm install -g ngrok
 ngrok config add-authtoken TOKEN_BURAYA
 
 # 3 — Tüneli başlat
-ngrok http 3000
+ngrok http 47371
 ```
 
 Çıktı:
 
 ```
 Session Status     online
-Forwarding         https://xxxx-xx-xx-xxx-xx.ngrok-free.app -> http://localhost:3000
+Forwarding         https://xxxx-xx-xx-xxx-xx.ngrok-free.app -> http://localhost:47371
 
 Connections        ttl=0  opn=0  rt1=0.00  rt5=0.00  p50=0.00  p90=0.00
 ```
@@ -1107,11 +1107,11 @@ Error: Target page, context or browser has been closed
 ```bash
 # 1 — Tüm Chrome pencerelerini kapat
 # 2 — Tarayıcıyı sıfırla
-curl -X POST http://localhost:3000/api/browser/reset \
+curl -X POST http://localhost:47371/api/browser/reset \
   -H "Authorization: Bearer gmb_xxxxx"
 
 # 3 — Yeniden aç
-curl -X POST http://localhost:3000/api/browser/open \
+curl -X POST http://localhost:47371/api/browser/open \
   -H "Authorization: Bearer gmb_xxxxx"
 ```
 
@@ -1141,10 +1141,10 @@ curl -X POST http://localhost:3000/api/browser/open \
 
 ```bash
 # Mevcut key'leri listele
-curl http://localhost:3000/api/keys
+curl http://localhost:47371/api/keys
 
 # Yeni key oluştur
-curl -X POST http://localhost:3000/api/keys \
+curl -X POST http://localhost:47371/api/keys \
   -H "Content-Type: application/json" \
   -d '{"label": "yeni"}'
 ```
